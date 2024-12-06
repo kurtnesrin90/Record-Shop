@@ -2,7 +2,6 @@ package com.northcoders.recordshop.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import jdk.jshell.Snippet;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,13 +23,14 @@ public class Album {
     @Column
     String albumName;
 
-    @ManyToOne
-    @JoinColumn(name = "artist_id")
-    Artist artist;
+ //   @ManyToOne
+  //  @JoinColumn(name = "artist_id")
+    @Column
+    String artist;
 
     @Column
-    @JsonFormat(pattern="yyyy-MM-dd")
-    LocalDate releaseDate;
+   // @JsonFormat(pattern="yyyy-MM-dd")
+    int releaseYear;
 
     @Column
     Genre genre;
