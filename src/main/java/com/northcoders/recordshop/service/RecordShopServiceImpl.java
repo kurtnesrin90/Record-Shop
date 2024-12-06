@@ -1,5 +1,6 @@
 package com.northcoders.recordshop.service;
 
+import com.northcoders.recordshop.DTO.AlbumDto;
 import com.northcoders.recordshop.model.Album;
 import com.northcoders.recordshop.repository.RecordShopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,11 @@ public class RecordShopServiceImpl implements RecordShopService {
     @Override
     public Optional<Album> getAlbumById(Long id) {
         return recordShopRepository.findById(id);
+    }
+
+    @Override
+    public Album insertAlbum(Album album) {
+        return recordShopRepository.save(album);
     }
 
 
