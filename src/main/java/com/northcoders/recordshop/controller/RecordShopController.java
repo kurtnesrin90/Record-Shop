@@ -1,5 +1,6 @@
 package com.northcoders.recordshop.controller;
 
+import com.northcoders.recordshop.DTO.AlbumDto;
 import com.northcoders.recordshop.model.Album;
 import com.northcoders.recordshop.service.RecordShopService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,4 +34,12 @@ public class RecordShopController {
             return ResponseEntity.status(HttpStatus.OK).body(albumById);
         }
     }
+
+    @PostMapping
+    public ResponseEntity<Album> addAlbum (@RequestBody Album album) {
+        Album newAlbum = recordShopService.insertAlbum(album);
+        return new ResponseEntity<>(newAlbum, HttpStatus.CREATED);
+    }
+
+
 }
