@@ -1,6 +1,8 @@
 package com.northcoders.recordshop.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jdk.jshell.Snippet;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,10 +11,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class Album {
 
     @Id
@@ -22,10 +24,12 @@ public class Album {
     @Column
     String albumName;
 
-    @Column
-    String artist;
+    @ManyToOne
+    @JoinColumn(name = "artist_id")
+    Artist artist;
 
     @Column
+    @JsonFormat(pattern="yyyy-MM-dd")
     LocalDate releaseDate;
 
     @Column
@@ -35,11 +39,9 @@ public class Album {
     Format format;
 
     @Column
-    Long StockQuantity;
+    Long stockQuantity;
 
     @Column
     Double price;
-
-
 
 }
