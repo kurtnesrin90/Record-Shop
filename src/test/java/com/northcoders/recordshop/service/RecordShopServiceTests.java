@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -110,5 +109,42 @@ public class RecordShopServiceTests {
         //Assert
         assertThat(actualResult).isEqualTo(newAlbum);
     }
+
+    @Test
+    public void test_updateAlbum() {
+        //Arrange
+        Album album = Album.builder()
+                .id(1L)
+                .albumName("The Tortured Poets Department: The Anthology")
+                .artist("Taylor Swift")
+                .genre(Genre.POP)
+                .format(Format.CD)
+                .price(16.99)
+                .releaseYear(Integer.parseInt("2024"))
+                .stockQuantity(50L)
+                .build();
+
+        Album updatedAlbum = Album.builder()
+                .albumName("B-sides And Otherwise")
+                .artist("Morphine")
+                .genre(Genre.ROCK)
+                .format(Format.VINYL)
+                .price(11.95)
+                .releaseYear(Integer.parseInt("2024"))
+                .stockQuantity(98L)
+                .build();
+
+        when(recordShopRepository.findById(album.getId())).thenReturn(Optional.of(album));
+        when(recordShopRepository.save(album)).thenReturn(updatedAlbum);
+
+        //Act
+        Album expectedResult = recordShopServiceImpl.updateAlbum(album.getId(), updatedAlbum);
+
+        //Assert
+        assertThat(expectedResult).isEqualTo(updatedAlbum);
+
+    }
+
+
 
 }
