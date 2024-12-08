@@ -1,7 +1,6 @@
 package com.northcoders.recordshop.service;
 
 import com.northcoders.recordshop.model.Album;
-import com.northcoders.recordshop.model.Artist;
 import com.northcoders.recordshop.model.Format;
 import com.northcoders.recordshop.model.Genre;
 import com.northcoders.recordshop.repository.RecordShopRepository;
@@ -33,11 +32,11 @@ public class RecordShopServiceTests {
         Album album1 = Album.builder()
                 .id(1L)
                 .albumName("The Tortured Poets Department: The Anthology")
-                .artist(new Artist("Taylor Swift"))
+                .artist("Taylor Swift")
                 .genre(Genre.POP)
                 .format(Format.CD)
                 .price(16.99)
-                .releaseDate(LocalDate.parse("2024-05-05"))
+                .releaseYear(Integer.parseInt("2024"))
                 .stockQuantity(50L)
                 .build();
         albumList.add(album1);
@@ -45,11 +44,11 @@ public class RecordShopServiceTests {
         Album album2 = Album.builder()
                 .id(2L)
                 .albumName("B-Sides And Otherwise")
-                .artist(new Artist("Morphine"))
+                .artist("Morphine")
                 .genre(Genre.ROCK)
                 .format(Format.VINYL)
                 .price(11.95)
-                .releaseDate(LocalDate.parse("2024-01-01"))
+                .releaseYear(Integer.parseInt("2024"))
                 .stockQuantity(98L)
                 .build();
         albumList.add(album2);
@@ -68,11 +67,11 @@ public class RecordShopServiceTests {
         Album album1 = Album.builder()
                 .id(1L)
                 .albumName("The Tortured Poets Department: The Anthology")
-                .artist(new Artist("Taylor Swift"))
+                .artist("Taylor Swift")
                 .genre(Genre.POP)
                 .format(Format.CD)
                 .price(16.99)
-                .releaseDate(LocalDate.parse("2024-05-05"))
+                .releaseYear(Integer.parseInt("2024"))
                 .stockQuantity(50L)
                 .build();
 
@@ -86,7 +85,30 @@ public class RecordShopServiceTests {
         assertThat(actualAlbum.get().getGenre()).as(String.valueOf(Genre.POP));
         assertThat(actualAlbum.get().getFormat()).as(String.valueOf(Format.CD));
         assertThat(actualAlbum.get().getPrice()).as(String.valueOf(16.99));
-        assertThat(actualAlbum.get().getReleaseDate()).as(String.valueOf(LocalDate.parse ("2024-05-05")));
+        assertThat(actualAlbum.get().getReleaseYear());
         assertThat(actualAlbum.get().getStockQuantity()).as(String.valueOf(50L));
     }
+
+    @Test
+    public void test_AddAlbum() {
+        //Arrange
+        Album newAlbum = Album.builder()
+                .id(1L)
+                .albumName("The Tortured Poets Department: The Anthology")
+                .artist("Taylor Swift")
+                .genre(Genre.POP)
+                .format(Format.CD)
+                .price(16.99)
+                .releaseYear(Integer.parseInt("2024"))
+                .stockQuantity(50L)
+                .build();
+
+        //Act
+        when(recordShopRepository.save(newAlbum)).thenReturn(newAlbum);
+        Album actualResult = recordShopServiceImpl.insertAlbum(newAlbum);
+
+        //Assert
+        assertThat(actualResult).isEqualTo(newAlbum);
+    }
+
 }
