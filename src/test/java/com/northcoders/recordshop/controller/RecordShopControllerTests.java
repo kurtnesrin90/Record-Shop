@@ -6,7 +6,6 @@ import com.northcoders.recordshop.model.Album;
 import com.northcoders.recordshop.model.Format;
 import com.northcoders.recordshop.model.Genre;
 import com.northcoders.recordshop.service.RecordShopService;
-import com.northcoders.recordshop.service.RecordShopServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,16 +16,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -42,9 +37,12 @@ public class RecordShopControllerTests {
     @Autowired
     MockMvc mockMvcController;
 
+    ObjectMapper mapper;
+
     @BeforeEach
     public void setup(){
         mockMvcController = MockMvcBuilders.standaloneSetup(recordShopController).build();
+        mapper = new ObjectMapper();
     }
 
     @Test
@@ -124,7 +122,7 @@ public class RecordShopControllerTests {
 
         //Assert
         this.mockMvcController.perform(
-                        MockMvcRequestBuilders.get("/api/v1/albums/1"))
+                        MockMvcRequestBuilders.get("/api/v1/albums/" + album1.getId()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(album1.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.albumName").value(album1.getAlbumName()))
@@ -169,7 +167,7 @@ public class RecordShopControllerTests {
 
         //Act
         when(recordShopService.getAlbumById(newAlbum.getId())).thenReturn(Optional.of(newAlbum));
-        ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
         //Assert
         this.mockMvcController.perform(
@@ -180,6 +178,74 @@ public class RecordShopControllerTests {
                                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
         verify(recordShopService, times(1)).insertAlbum(newAlbum);
+    }
+
+    @Test
+    @DisplayName("Tests update an album by its id")
+    void test_updateAlbum() throws Exception {
+        //Arrange
+        Album album = Album.builder()
+                .id(1L)
+                .albumName("The Tortured Poets Department: The Anthology")
+                .artist("Taylor Swift")
+                .genre(Genre.POP)
+                .format(Format.CD)
+                .price(16.99)
+                .releaseYear(Integer.parseInt("2024"))
+                .stockQuantity(50L)
+                .build();
+
+        Album updatedAlbum = Album.builder()
+                .albumName("B-sides and Otherwise")
+                .artist("Morphine")
+                .genre(Genre.ROCK)
+                .format(Format.VINYL)
+                .price(11.95)
+                .stockQuantity(98L)
+                .build();
+
+        //Act
+        when(recordShopService.updateAlbum(album.getId() , updatedAlbum)).thenReturn(updatedAlbum);
+
+        //Assert
+        this.mockMvcController.perform(
+                        MockMvcRequestBuilders.put("/api/v1/albums/" + album.getId())
+                                .content(mapper.writeValueAsString(updatedAlbum))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.albumName").value(updatedAlbum.getAlbumName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.artist").value(updatedAlbum.getArtist()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.genre").value(updatedAlbum.getGenre().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.format").value(updatedAlbum.getFormat().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.price").value(updatedAlbum.getPrice()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.stockQuantity").value(updatedAlbum.getStockQuantity()));
+
+    }
+
+    @Test
+    @DisplayName("Tests delete the album with given id")
+    void test_deleteAlbum() throws Exception {
+        //Arrange
+        Album album = Album.builder()
+                .id(1L)
+                .albumName("The Tortured Poets Department: The Anthology")
+                .artist("Taylor Swift")
+                .genre(Genre.POP)
+                .format(Format.CD)
+                .price(16.99)
+                .releaseYear(Integer.parseInt("2024"))
+                .stockQuantity(50L)
+                .build();
+
+        //Act
+        String message = "Deleting success!";
+        when(recordShopService.deleteById(album.getId())).thenReturn(message);
+
+        //Assert
+        this.mockMvcController.perform(
+                        MockMvcRequestBuilders.delete("/api/v1/albums/"+ album.getId()))
+                .andExpect(MockMvcResultMatchers.status().is(200));
     }
 
 }
