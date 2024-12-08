@@ -4,6 +4,7 @@ import com.northcoders.recordshop.DTO.AlbumDto;
 import com.northcoders.recordshop.model.Album;
 import com.northcoders.recordshop.service.RecordShopService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +40,19 @@ public class RecordShopController {
     public ResponseEntity<Album> addAlbum (@RequestBody Album album) {
         Album newAlbum = recordShopService.insertAlbum(album);
         return new ResponseEntity<>(newAlbum, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Album> updateAlbum (@PathVariable Long id , @RequestBody Album album) {
+        Album updatedAlbum = recordShopService.updateAlbum(id , album);
+        return new ResponseEntity<>(updatedAlbum , HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteAlbum (@PathVariable Long id) {
+       String message = recordShopService.deleteById(id);
+       return ResponseEntity.ok(message);
+
     }
 
 
