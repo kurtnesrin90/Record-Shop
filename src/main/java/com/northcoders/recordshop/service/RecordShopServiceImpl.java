@@ -1,6 +1,5 @@
 package com.northcoders.recordshop.service;
 
-import com.northcoders.recordshop.DTO.AlbumDto;
 import com.northcoders.recordshop.model.Album;
 import com.northcoders.recordshop.repository.RecordShopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +26,39 @@ public class RecordShopServiceImpl implements RecordShopService {
 
     @Override
     public Optional<Album> getAlbumById(Long id) {
-        return recordShopRepository.findById(id);
+        Optional<Album> existingAlbum = recordShopRepository.findById(id);
+        if(existingAlbum.isEmpty()){
+            throw new RuntimeException("Album could not found by this id: " + id);
+        } else {
+            return existingAlbum;
+        }
     }
 
     @Override
     public Album insertAlbum(Album album) {
         return recordShopRepository.save(album);
+    }
+
+    @Override
+    public Album updateAlbum(Long id , Album album) {
+        Album foundAlbumById = recordShopRepository.findById(id).orElseThrow(() -> new RuntimeException("Album not found with this id: " + id));
+        foundAlbumById.setAlbumName(album.getAlbumName());
+        foundAlbumById.setArtist(album.getArtist());
+        foundAlbumById.setFormat(album.getFormat());
+        foundAlbumById.setPrice(album.getPrice());
+        foundAlbumById.setGenre(album.getGenre());
+        foundAlbumById.setReleaseYear(album.getReleaseYear());
+        foundAlbumById.setStockQuantity(album.getStockQuantity());
+
+        return recordShopRepository.save(foundAlbumById);
+
+    }
+
+    @Override
+    public String deleteById(Long id) {
+        Album existingAlbum = recordShopRepository.findById(id).orElseThrow(() -> new RuntimeException("Album could not found with this id: " + id));
+        recordShopRepository.delete(existingAlbum);
+        return "Deleting success!";
     }
 
 
