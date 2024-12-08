@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 
@@ -79,13 +80,14 @@ public class RecordShopServiceTests {
         Optional<Album> actualAlbum = recordShopServiceImpl.getAlbumById(album1.getId());
 
         //Assert
-        assertThat(actualAlbum.get().getAlbumName()).as("The Tortured Poets Department: The Anthology");
-        assertThat(actualAlbum.get().getArtist()).as("Taylor Swift");
-        assertThat(actualAlbum.get().getGenre()).as(String.valueOf(Genre.POP));
-        assertThat(actualAlbum.get().getFormat()).as(String.valueOf(Format.CD));
-        assertThat(actualAlbum.get().getPrice()).as(String.valueOf(16.99));
-        assertThat(actualAlbum.get().getReleaseYear());
-        assertThat(actualAlbum.get().getStockQuantity()).as(String.valueOf(50L));
+        assertTrue(actualAlbum.isPresent());
+        assertThat(actualAlbum.get().getAlbumName()).isEqualTo(album1.getAlbumName());
+        assertThat(actualAlbum.get().getArtist()).isEqualTo(album1.getArtist());
+        assertThat(actualAlbum.get().getGenre()).isEqualTo(album1.getGenre());
+        assertThat(actualAlbum.get().getFormat()).isEqualTo(album1.getFormat());
+        assertThat(actualAlbum.get().getPrice()).isEqualTo(album1.getPrice());
+        assertThat(actualAlbum.get().getReleaseYear()).isEqualTo(album1.getReleaseYear());
+        assertThat(actualAlbum.get().getStockQuantity()).isEqualTo(album1.getStockQuantity());
     }
 
     @Test
@@ -142,6 +144,29 @@ public class RecordShopServiceTests {
 
         //Assert
         assertThat(expectedResult).isEqualTo(updatedAlbum);
+
+    }
+
+    @Test
+    public void test_deleteAlbum() {
+        //Arrange
+        Album album = Album.builder()
+                .id(1L)
+                .albumName("The Tortured Poets Department: The Anthology")
+                .artist("Taylor Swift")
+                .genre(Genre.POP)
+                .format(Format.CD)
+                .price(16.99)
+                .releaseYear(Integer.parseInt("2024"))
+                .stockQuantity(50L)
+                .build();
+
+        //Act
+        when(recordShopRepository.findById(album.getId())).thenReturn(Optional.of(album));
+        String expectedMessage = recordShopServiceImpl.deleteById(album.getId());
+
+        //Assert
+        assertThat(expectedMessage).isEqualTo("Deleting success!");
 
     }
 
