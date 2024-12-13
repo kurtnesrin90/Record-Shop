@@ -1,10 +1,8 @@
 package com.northcoders.recordshop.controller;
 
-import com.northcoders.recordshop.DTO.AlbumDto;
 import com.northcoders.recordshop.model.Album;
 import com.northcoders.recordshop.service.RecordShopService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
