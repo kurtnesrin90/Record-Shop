@@ -3,8 +3,11 @@ package com.northcoders.recordshop.service;
 import com.northcoders.recordshop.model.Album;
 import com.northcoders.recordshop.repository.RecordShopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +20,9 @@ public class RecordShopServiceImpl implements RecordShopService {
     @Autowired
     RecordShopRepository recordShopRepository;
 
+    @Autowired
+    CacheManager cacheManager;
+
     @Override
     public List<Album> getAllAlbums() {
         List<Album> albums = new ArrayList<>();
@@ -24,6 +30,7 @@ public class RecordShopServiceImpl implements RecordShopService {
         return albums;
     }
 
+    @Cacheable(value = "albums" , key = "#id")
     @Override
     public Optional<Album> getAlbumById(Long id) {
         Optional<Album> existingAlbum = recordShopRepository.findById(id);
@@ -39,6 +46,7 @@ public class RecordShopServiceImpl implements RecordShopService {
         return recordShopRepository.save(album);
     }
 
+    @CachePut(value = "albums", key = "#id")
     @Override
     public Album updateAlbum(Long id , Album album) {
         Album foundAlbumById = recordShopRepository.findById(id).orElseThrow(() -> new RuntimeException("Album not found with this id: " + id));
@@ -54,12 +62,12 @@ public class RecordShopServiceImpl implements RecordShopService {
 
     }
 
+    @CacheEvict(value = "albums", key = "#id")
     @Override
     public String deleteById(Long id) {
         Album existingAlbum = recordShopRepository.findById(id).orElseThrow(() -> new RuntimeException("Album could not found with this id: " + id));
         recordShopRepository.delete(existingAlbum);
         return "Deleting success!";
     }
-
 
 }
